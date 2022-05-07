@@ -12,12 +12,12 @@ import scipy.io as sio
 from sklearn import *
 import matplotlib.pyplot as plt
 
-tf.app.flags.DEFINE_string(
+tf.compat.v1.flags.DEFINE_string(
     'evaluation_dir', '../../results/ROC',
     'Directory where checkpoints and event logs are written to.')
 
 # Store all elemnts in FLAG structure!
-FLAGS = tf.app.flags.FLAGS
+FLAGS = tf.compat.v1.flags.FLAGS
 
 
 score = np.load(os.path.join(FLAGS.evaluation_dir,'score_vector.npy'))

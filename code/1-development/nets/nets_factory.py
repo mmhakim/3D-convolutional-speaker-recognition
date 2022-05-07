@@ -24,7 +24,9 @@ import tensorflow as tf
 from nets import cnn_speech
 
 
-slim = tf.contrib.slim
+import tf_slim as slim
+
+#slim = tf.contrib.slim
 
 networks_map = {'cnn_speech':cnn_speech.speech_cnn}
 

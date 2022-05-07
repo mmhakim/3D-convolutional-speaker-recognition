@@ -42,8 +42,9 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
+import tf_slim as slim
 
-slim = tf.contrib.slim
+#slim = tf.contrib.slim
 
 
 def speech_cnn_arg_scope(is_training, weight_decay=0.0005):

@@ -58,16 +58,16 @@ def Plot_ROC_Fn(label,distance,save_path):
 
 if __name__ == '__main__':
     
-    tf.app.flags.DEFINE_string(
+    tf.compat.v1.flags.DEFINE_string(
     'evaluation_dir', '../../results/SCORES',
     'Directory where checkpoints and event logs are written to.')
     
-    tf.app.flags.DEFINE_string(
+    tf.compat.v1.flags.DEFINE_string(
     'plot_dir', '../../results/PLOTS',
     'Directory where plots are saved to.')
 
     # Store all elemnts in FLAG structure!
-    FLAGS = tf.app.flags.FLAGS
+    FLAGS = tf.compat.v1.flags.FLAGS
     
     # Loading scores and labels
     score = np.load(os.path.join(FLAGS.evaluation_dir,'score_vector.npy'))

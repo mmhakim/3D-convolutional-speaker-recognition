@@ -13,143 +13,145 @@ from nets import nets_factory
 from auxiliary import losses
 from roc_curve import calculate_roc
 
-slim = tf.contrib.slim
+import tf_slim as slim
+
+#slim = tf.contrib.slim
 
 ######################
 # Train Directory #
 ######################
-tf.app.flags.DEFINE_string(
+tf.compat.v1.flags.DEFINE_string(
     'train_dir', '../../results/TRAIN_CNN_3D/train_logs',
     'Directory where checkpoints and event logs are written to.')
 
-tf.app.flags.DEFINE_string(
+tf.compat.v1.flags.DEFINE_string(
     'development_dataset_path', '../../data/development_sample_dataset_speaker.hdf5',
     'Directory where checkpoints and event logs are written to.')
 
-tf.app.flags.DEFINE_integer('num_clones', 3,
+tf.compat.v1.flags.DEFINE_integer('num_clones', 3,
                             'Number of model clones to deploy.')
 
-tf.app.flags.DEFINE_boolean('clone_on_cpu', False,
+tf.compat.v1.flags.DEFINE_boolean('clone_on_cpu', False,
                             'Use CPUs to deploy clones.')
-tf.app.flags.DEFINE_boolean('online_pair_selection', False,
+tf.compat.v1.flags.DEFINE_boolean('online_pair_selection', False,
                             'Use online pair selection.')
 
-tf.app.flags.DEFINE_integer('worker_replicas', 1, 'Number of worker replicas.')
+tf.compat.v1.flags.DEFINE_integer('worker_replicas', 1, 'Number of worker replicas.')
 
-tf.app.flags.DEFINE_integer(
+tf.compat.v1.flags.DEFINE_integer(
     'num_ps_tasks', 0,
     'The number of parameter servers. If the value is 0, then the parameters '
     'are handled locally by the worker.')
 
-tf.app.flags.DEFINE_integer(
+tf.compat.v1.flags.DEFINE_integer(
     'num_readers', 8,
     'The number of parallel readers that read data from the dataset.')
 
-tf.app.flags.DEFINE_integer(
+tf.compat.v1.flags.DEFINE_integer(
     'num_preprocessing_threads', 8,
     'The number of threads used to create the batches.')
 
-tf.app.flags.DEFINE_integer(
+tf.compat.v1.flags.DEFINE_integer(
     'log_every_n_steps', 1,
     'The frequency with which logs are print.')
 
-tf.app.flags.DEFINE_integer(
+tf.compat.v1.flags.DEFINE_integer(
     'save_summaries_secs', 10,
     'The frequency with which summaries are saved, in seconds.')
 
-tf.app.flags.DEFINE_integer(
+tf.compat.v1.flags.DEFINE_integer(
     'save_interval_secs', 500,
     'The frequency with which the model is saved, in seconds.')
 
-tf.app.flags.DEFINE_integer(
+tf.compat.v1.flags.DEFINE_integer(
     'task', 0, 'Task id of the replica running the training.')
 
 ######################
 # Optimization Flags #
 ######################
 
-tf.app.flags.DEFINE_float(
+tf.compat.v1.flags.DEFINE_float(
     'weight_decay', 0.00004, 'The weight decay on the model weights.')
 
-tf.app.flags.DEFINE_string(
+tf.compat.v1.flags.DEFINE_string(
     'optimizer', 'adam',
     'The name of the optimizer, one of "adadelta", "adagrad", "adam",'
     '"ftrl", "momentum", "sgd" or "rmsprop".')
 
-tf.app.flags.DEFINE_float(
+tf.compat.v1.flags.DEFINE_float(
     'adadelta_rho', 0.95,
     'The decay rate for adadelta.')
 
-tf.app.flags.DEFINE_float(
+tf.compat.v1.flags.DEFINE_float(
     'adagrad_initial_accumulator_value', 0.1,
     'Starting value for the AdaGrad accumulators.')
 
-tf.app.flags.DEFINE_float(
+tf.compat.v1.flags.DEFINE_float(
     'adam_beta1', 0.9,
     'The exponential decay rate for the 1st moment estimates.')
 
-tf.app.flags.DEFINE_float(
+tf.compat.v1.flags.DEFINE_float(
     'adam_beta2', 0.999,
     'The exponential decay rate for the 2nd moment estimates.')
 
-tf.app.flags.DEFINE_float('opt_epsilon', 1.0, 'Epsilon term for the optimizer.')
+tf.compat.v1.flags.DEFINE_float('opt_epsilon', 1.0, 'Epsilon term for the optimizer.')
 
-tf.app.flags.DEFINE_float('ftrl_learning_rate_power', -0.5,
+tf.compat.v1.flags.DEFINE_float('ftrl_learning_rate_power', -0.5,
                           'The learning rate power.')
 
-tf.app.flags.DEFINE_float(
+tf.compat.v1.flags.DEFINE_float(
     'ftrl_initial_accumulator_value', 0.1,
     'Starting value for the FTRL accumulators.')
 
-tf.app.flags.DEFINE_float(
+tf.compat.v1.flags.DEFINE_float(
     'ftrl_l1', 0.0, 'The FTRL l1 regularization strength.')
 
-tf.app.flags.DEFINE_float(
+tf.compat.v1.flags.DEFINE_float(
     'ftrl_l2', 0.0, 'The FTRL l2 regularization strength.')
 
-tf.app.flags.DEFINE_float(
+tf.compat.v1.flags.DEFINE_float(
     'momentum', 0.9,
     'The momentum for the MomentumOptimizer and RMSPropOptimizer.')
 
-tf.app.flags.DEFINE_float('rmsprop_momentum', 0.9, 'Momentum.')
+tf.compat.v1.flags.DEFINE_float('rmsprop_momentum', 0.9, 'Momentum.')
 
-tf.app.flags.DEFINE_float('rmsprop_decay', 0.9, 'Decay term for RMSProp.')
+tf.compat.v1.flags.DEFINE_float('rmsprop_decay', 0.9, 'Decay term for RMSProp.')
 
 #######################
 # Learning Rate Flags #
 #######################
 
-tf.app.flags.DEFINE_string(
+tf.compat.v1.flags.DEFINE_string(
     'learning_rate_decay_type',
     'exponential',
     'Specifies how the learning rate is decayed. One of "fixed", "exponential",'
     ' or "polynomial"')
 
-tf.app.flags.DEFINE_float('learning_rate', 10.0, 'Initial learning rate.')
+tf.compat.v1.flags.DEFINE_float('learning_rate', 10.0, 'Initial learning rate.')
 
-tf.app.flags.DEFINE_float(
+tf.compat.v1.flags.DEFINE_float(
     'end_learning_rate', 0.0001,
     'The minimal end learning rate used by a polynomial decay learning rate.')
 
-tf.app.flags.DEFINE_float(
+tf.compat.v1.flags.DEFINE_float(
     'label_smoothing', 0.0, 'The amount of label smoothing.')
 
-tf.app.flags.DEFINE_float(
+tf.compat.v1.flags.DEFINE_float(
     'learning_rate_decay_factor', 0.94, 'Learning rate decay factor.')
 
-tf.app.flags.DEFINE_float(
+tf.compat.v1.flags.DEFINE_float(
     'num_epochs_per_decay', 5.0,
     'Number of epochs after which learning rate decays.')
 
-tf.app.flags.DEFINE_bool(
+tf.compat.v1.flags.DEFINE_bool(
     'sync_replicas', False,
     'Whether or not to synchronize the replicas during training.')
 
-tf.app.flags.DEFINE_integer(
+tf.compat.v1.flags.DEFINE_integer(
     'replicas_to_aggregate', 1,
     'The Number of gradients to collect before updating params.')
 
-tf.app.flags.DEFINE_float(
+tf.compat.v1.flags.DEFINE_float(
     'moving_average_decay', None,
     'The decay to use for the moving average.'
     'If left as None, then moving averages are not used.')
@@ -159,17 +161,17 @@ tf.app.flags.DEFINE_float(
 #######################
 
 
-tf.app.flags.DEFINE_string(
+tf.compat.v1.flags.DEFINE_string(
     'model_speech', 'cnn_speech', 'The name of the architecture to train.')
 
-tf.app.flags.DEFINE_integer(
+tf.compat.v1.flags.DEFINE_integer(
     'batch_size', 3, 'The number of samples in each batch. It will be the number of samples distributed for all clones.')
 
-tf.app.flags.DEFINE_integer(
+tf.compat.v1.flags.DEFINE_integer(
     'num_epochs', 1, 'The number of epochs for training.')
 
 # Store all elemnts in FLAG structure!
-FLAGS = tf.app.flags.FLAGS
+FLAGS = tf.compat.v1.flags.FLAGS
 
 
 def _configure_learning_rate(num_samples_per_epoch, global_step):
