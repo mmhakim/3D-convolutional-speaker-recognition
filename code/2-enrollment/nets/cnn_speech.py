@@ -104,7 +104,7 @@ def speech_cnn(inputs, num_classes=1000,
     """
 
     end_points = {}
-    with tf.variable_scope(scope, 'net', [inputs]) as sc:
+    with tf.compat.v1.variable_scope(scope, 'net', [inputs]) as sc:
         end_points_collection = sc.name + '_end_points'
 
         # Collect outputs for conv3d and max_pool2d.

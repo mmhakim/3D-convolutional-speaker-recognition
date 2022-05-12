@@ -191,7 +191,7 @@ def _configure_learning_rate(num_samples_per_epoch, global_step):
         decay_steps /= FLAGS.replicas_to_aggregate
 
     if FLAGS.learning_rate_decay_type == 'exponential':
-        return tf.train.exponential_decay(FLAGS.learning_rate,
+        return tf.compat.v1.train.exponential_decay(FLAGS.learning_rate,
                                           global_step,
                                           decay_steps,
                                           FLAGS.learning_rate_decay_factor,
@@ -234,7 +234,7 @@ def _configure_optimizer(learning_rate):
             learning_rate,
             initial_accumulator_value=FLAGS.adagrad_initial_accumulator_value)
     elif FLAGS.optimizer == 'adam':
-        optimizer = tf.train.AdamOptimizer(
+        optimizer = tf.compat.v1.train.AdamOptimizer(
             learning_rate,
             beta1=FLAGS.adam_beta1,
             beta2=FLAGS.adam_beta2,
@@ -325,7 +325,7 @@ num_subjects = len(np.unique(fileh.root.label_train[:]))
 def main(_):
 
     # Log
-    tf.logging.set_verbosity(tf.logging.INFO)
+    tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.INFO)
 
     graph = tf.Graph()
     with graph.as_default(), tf.device('/cpu:0'):
@@ -353,7 +353,7 @@ def main(_):
         ######################
 
         # Training flag.
-        is_training = tf.placeholder(tf.bool)
+        is_training = tf.compat.v1.placeholder(tf.bool)
 
         # Get the network. The number of subjects is num_subjects.
         model_speech_fn = nets_factory.get_network_fn(
@@ -376,10 +376,10 @@ def main(_):
         """
         Define the place holders and creating the batch tensor.
         """
-        speech = tf.placeholder(tf.float32, (20, 80, 40, 1))
-        label = tf.placeholder(tf.int32, (1))
-        batch_dynamic = tf.placeholder(tf.int32, ())
-        margin_imp_tensor = tf.placeholder(tf.float32, ())
+        speech = tf.compat.v1.placeholder(tf.float32, (20, 80, 40, 1))
+        label = tf.compat.v1.placeholder(tf.int32, (1))
+        batch_dynamic = tf.compat.v1.placeholder(tf.int32, ())
+        margin_imp_tensor = tf.compat.v1.placeholder(tf.float32, ())
 
         # Create the batch tensors
         batch_speech, batch_labels = tf.train.batch(
@@ -392,7 +392,7 @@ def main(_):
         # Specify the loss function #
         #############################
         tower_grads = []
-        with tf.variable_scope(tf.get_variable_scope()):
+        with tf.compat.v1.variable_scope(tf.get_variable_scope()):
             for i in range(FLAGS.num_clones):
                 with tf.device('/gpu:%d' % i):
                     with tf.name_scope('%s_%d' % ('tower', i)) as scope:
@@ -599,4 +599,4 @@ def main(_):
 
 
 if __name__ == '__main__':
-    tf.app.run()
+    tf.compat.v1.app.run
